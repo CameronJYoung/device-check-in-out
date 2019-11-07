@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<link rel="stylesheet" type="text/css" href="{{paths.css}}global.css">
+	{{#if css}}
+	<link rel="stylesheet" type="text/css" href="{{paths.css}}pages/{{page}}.css">
+	{{/if}}
+	<script src="{{paths.js}}global.js" defer></script>
+	{{> libraries}}
+	{{#if js}}
+	<script src="{{paths.js}}pages/{{page}}.js" defer></script>
+	{{/if}}
+	<title>{{title}}</title>
+</head>
+<body>
+	{{> body}}
+</body>
+</html>
