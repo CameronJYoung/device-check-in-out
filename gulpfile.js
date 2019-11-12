@@ -3,6 +3,14 @@ const panini = require('panini');
 const sass = require('gulp-sass');
 const del = require('del');
 const browserSync = require('browser-sync').create();
+const browserify = require('browserify');
+const source = require('vinyl-source-stream');
+const buffer = require('vinyl-buffer');
+const babelify = require('babelify');
+const glob = require('glob');
+const sourcemaps = require('gulp-sourcemaps');
+const merge = require('merge-stream');
+const path = require('path');
 
 let convertHbsTask = (done) => {
 	panini.refresh();
@@ -28,12 +36,18 @@ let convertScssTask = (done) => {
 	done();
 }
 
-let moveJavascriptTask = (done) => {
-	gulp.src('./app/js/*.js')
-		.pipe(gulp.dest('./dist/js'));
-	gulp.src('./app/js/pages/*.js')
-		.pipe(gulp.dest('./dist/js/pages'));
-	done();
+let compileJavascript = (done) => {
+	let files = glob.sync('./app/js/*.js');
+	return merge(files.map((entry) => {
+		return browserify({
+			entries: entry
+		})
+		.transform('babelify', {presets: ['@babel/preset-env'] })
+		.bundle()
+		.pipe(source(path.basename(entry)))
+		.pipe(buffer())
+		.pipe(gulp.dest('./dist/js'))
+	}));
 }
 
 let moveImagesTask = (done) => {
@@ -69,10 +83,10 @@ let browserSyncTask = (done) => {
 	done();
 }
 let watchTask = (done) => {
-	gulp.watch('./app').on('change', gulp.series(clearDist,convertHbsTask,moveFontsTask,convertScssTask,moveJavascriptTask,moveImagesTask,browserSyncReloadTask));
+	gulp.watch('./app').on('change', gulp.series(clearDist,convertHbsTask,moveFontsTask,convertScssTask,compileJavascript,moveImagesTask,browserSyncReloadTask));
 	done();
 }
 
 exports.clean = clearDist;
-exports.dev = gulp.series(clearDist,gulp.parallel(convertHbsTask,moveFontsTask,convertScssTask,moveJavascriptTask,moveImagesTask),browserSyncTask,watchTask);
-exports.build = gulp.series(clearDist,gulp.parallel(convertHbsTask,moveFontsTask,convertScssTask,moveJavascriptTask,moveImagesTask));
+exports.dev = gulp.series(clearDist,gulp.parallel(convertHbsTask,moveFontsTask,convertScssTask,compileJavascript,moveImagesTask),browserSyncTask,watchTask);
+exports.build = gulp.series(clearDist,gulp.parallel(convertHbsTask,moveFontsTask,convertScssTask,compileJavascript,moveImagesTask));

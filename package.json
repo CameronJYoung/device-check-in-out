@@ -11,10 +11,28 @@
   "dependencies": {
     "browser-sync": "^2.26.7",
     "del": "^5.0.0",
-    "gulp": "^4.0.2"
+    "firebase": "^7.2.3",
+    "fs-extra": "^8.1.0",
+    "glob": "^7.1.6",
+    "gulp": "^4.0.2",
+    "gulp-sourcemaps": "^2.6.5"
   },
   "devDependencies": {
+    "@babel/core": "^7.0.0-rc.1",
+    "@babel/preset-env": "^7.0.0-rc.1",
+    "babel-preset-env": "^1.7.0",
+    "babelify": "^10.0.0",
+    "browserify": "^16.5.0",
     "gulp-sass": "^4.0.2",
-    "panini": "^1.6.3"
+    "merge-stream": "^2.0.0",
+    "panini": "^1.6.3",
+    "path": "^0.12.7",
+    "vinyl-buffer": "^1.0.1",
+    "vinyl-source-stream": "^2.0.0"
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env"
+    ]
   }
 }
