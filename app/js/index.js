@@ -3,12 +3,15 @@ import {auth,db,provider} from './modules/firebase';
 let verifyData = (object) => {
 	if ((object.phoneNumber).length !== 11) {
 		alert(`Phone Number should be an 11 digit mobile number.`);
+		document.querySelector('#main-signup-form').reset();
 		return false;
 	} else if ((object.password).length < 8) {
 		alert(`Password has to be over 8 characters.`);
+		document.querySelector('#main-signup-form').reset();
 		return false;
 	} else if (object.password !== object.password2) {
 		alert(`The password and password confirmation should be the same.`);
+		document.querySelector('#main-signup-form').reset();
 		return false;
 	}
 	return true;
@@ -34,10 +37,10 @@ let signUp = () => {
 				phone: accountData.phoneNumber,
 				email: accountData.email,
 			})
-			document.querySelector('#signupButton').setAttribute('disabled', 'true');
-			document.querySelector('#signupButton').style.opacity = '0.3';
+			document.querySelector('#main-signup-form').reset();
 		})
 		.catch((error) => {
+			document.querySelector('#main-signup-form').reset();
 			alert(`ERROR: ${error.message}`);
 		})
 	}
@@ -54,13 +57,11 @@ let logIn = () => {
 	});
 	auth.onAuthStateChanged((user) => {
 		if (user) {
-			console.log(user.email);
+			window.location = 'main.html';
 		} else {
 			console.log('does not exist!!!');
 		}
 	});
-
-
 
 }
 
