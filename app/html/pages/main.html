@@ -2,17 +2,89 @@
 css: true
 js: true
 ---
-<div class="main-container">
-	<header class="header">
-		<h1 class="main-title">Havas Lynx<br>Device Check in/out</h1>
+<div class="main-content">
+	<span class="side-bar">
+		<h1 class="title">Havas Lynx<br>Device check in/out</h1>
 		<button id="sign-out-button">Sign Out</button>
-	</header>
-	<div class="main-content">
-		<div>
-			{{> device-table}}
-		</div>
-		<div>
+	</span>
+	<div class="content-container">
+		<div class="page-content">
+			<div class="panel" id="left-panel">
+				<table class="device-table">
+					<caption>Device List</caption>
+					<thead>
+						<tr>
+							<th>Device</th>
+							<th>Type</th>
+							<th>Availability</th>
+						</tr>
+					</thead>
+					<tr>
+						<td>HL0256</td>
+						<td>iPad</td>
+						<td>Unavailable</td>
+					</tr>
+					<tr>
+						<td>HL0257</td>
+						<td>iPad</td>
+						<td>Unavailable</td>
+					</tr>
+					<tr>
+						<td>HL0258</td>
+						<td>laptop</td>
+						<td>Unavailable</td>
+					</tr>
+					<tr>
+						<td>HL0259</td>
+						<td>iPhone</td>
+						<td>Unavailable</td>
+					</tr>
+					<tr>
+						<td>HL0260</td>
+						<td>iPad</td>
+						<td>Unavailable</td>
+					</tr>
+				</table>
+			</div>
 
+			<div class="panel" id="right-panel">
+
+				<div class="tabs">
+
+					<div class="tab">
+						<input type="radio" id="tab-1" name="tab-group-1" checked>
+						<label for="tab-1">Check in/out</label>
+
+						<div class="tab-content">
+							Device Check in/out tab section
+						</div>
+
+					</div>
+
+					<div class="tab">
+						<input type="radio" id="tab-2" name="tab-group-1">
+						<label for="tab-2">Register Device</label>
+
+						<div class="tab-content">
+							New device registration tab section
+						</div>
+
+					</div>
+
+					<div class="tab">
+						<input type="radio" id="tab-3" name="tab-group-1">
+						<label for="tab-3">Admin</label>
+
+						<div class="tab-content">
+							Admin tab section
+						</div>
+
+					</div>
+
+
+				</div>
+
+			</div>
 		</div>
 	</div>
 </div>
