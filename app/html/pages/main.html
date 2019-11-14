@@ -2,12 +2,17 @@
 css: true
 js: true
 ---
-<div id="main-content">
-	<ul>
-		<li id="firstname"></li>
-		<li id="lastname"></li>
-		<li id="email"></li>
-		<li id="phone"></li>
-	</ul>
-	<button id="sign-out-button">Sign Out</button>
+<div class="main-container">
+	<header class="header">
+		<h1 class="main-title">Havas Lynx<br>Device Check in/out</h1>
+		<button id="sign-out-button">Sign Out</button>
+	</header>
+	<div class="main-content">
+		<div>
+			{{> device-table}}
+		</div>
+		<div>
+
+		</div>
+	</div>
 </div>

@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	auth.onAuthStateChanged((user) => {
 		if (user) { //If user is logged in from entering new page
-			console.log(user);
 			const docRef = db.collection('users').doc(user.uid);
 
 			docRef.get().then((doc) => {

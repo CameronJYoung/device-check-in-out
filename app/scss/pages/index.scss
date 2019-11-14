@@ -1,3 +1,35 @@
-.auth-form{
-	padding: 30px;
+#main-signup{
+	padding-right: 60px;
+	border-right: 1px black solid;
+	height: 400px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+}
+#main-login{
+	padding-left: 60px;
+	border-left: 1px black solid;
+	height: 400px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+}
+.form-button{
+	padding: 15px;
+	margin: 10px;
+	border-radius: 8px;
+	background: #f4eded;
+}
+.form-input{
+	border: 1px black solid;
+	padding: 5px;
+	margin: 2px;
+	border-radius: 5px;
+
+}
+.form-heading{
+	padding: 0px;
+	margin: 5px;
 }
