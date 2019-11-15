@@ -1,0 +1,32 @@
+//Table
+.device-table {
+	border-collapse: collapse;
+	margin: 15px 0;
+	font-size: 16px;
+	min-width: 340px;
+}
+
+.device-table caption{
+	padding-bottom: 10px;
+	font-weight: bold;
+	font-size: 20px;
+}
+
+.device-table thead tr {
+	background: #747cdb;
+	color: white;
+	text-align: left;
+	font-weight: bold;
+}
+
+.device-table th, .device-table td{
+	padding: 12px 15px;
+}
+
+.device-table tbody tr{
+	border-bottom: 2px solid #9494cc;
+}
+
+.device-table tbody tr:last-of-type {
+	border-bottom: 3px solid #747cdb;
+}

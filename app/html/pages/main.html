@@ -10,80 +10,10 @@ js: true
 	<div class="content-container">
 		<div class="page-content">
 			<div class="panel" id="left-panel">
-				<table class="device-table">
-					<caption>Device List</caption>
-					<thead>
-						<tr>
-							<th>Device</th>
-							<th>Type</th>
-							<th>Availability</th>
-						</tr>
-					</thead>
-					<tr>
-						<td>HL0256</td>
-						<td>iPad</td>
-						<td>Unavailable</td>
-					</tr>
-					<tr>
-						<td>HL0257</td>
-						<td>iPad</td>
-						<td>Unavailable</td>
-					</tr>
-					<tr>
-						<td>HL0258</td>
-						<td>laptop</td>
-						<td>Unavailable</td>
-					</tr>
-					<tr>
-						<td>HL0259</td>
-						<td>iPhone</td>
-						<td>Unavailable</td>
-					</tr>
-					<tr>
-						<td>HL0260</td>
-						<td>iPad</td>
-						<td>Unavailable</td>
-					</tr>
-				</table>
+				{{> device-table}}
 			</div>
-
 			<div class="panel" id="right-panel">
-
-				<div class="tabs">
-
-					<div class="tab">
-						<input type="radio" id="tab-1" name="tab-group-1" checked>
-						<label for="tab-1">Check in/out</label>
-
-						<div class="tab-content">
-							Device Check in/out tab section
-						</div>
-
-					</div>
-
-					<div class="tab">
-						<input type="radio" id="tab-2" name="tab-group-1">
-						<label for="tab-2">Register Device</label>
-
-						<div class="tab-content">
-							New device registration tab section
-						</div>
-
-					</div>
-
-					<div class="tab">
-						<input type="radio" id="tab-3" name="tab-group-1">
-						<label for="tab-3">Admin</label>
-
-						<div class="tab-content">
-							Admin tab section
-						</div>
-
-					</div>
-
-
-				</div>
-
+				{{> tabs}}
 			</div>
 		</div>
 	</div>

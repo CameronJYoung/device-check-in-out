@@ -1,72 +1,12 @@
-//Table
-.device-table {
-	border-collapse: collapse;
-	margin: 15px 0;
-	font-size: 16px;
-	min-width: 340px;
-}
+@import '../partial/table.scss';
+@import '../partial/tabs.scss';
 
-.device-table caption{
-	padding-bottom: 10px;
-	font-weight: bold;
-	font-size: 20px;
-}
-
-.device-table thead tr {
-	background: #747cdb;
-	color: white;
-	text-align: left;
-	font-weight: bold;
-}
-
-.device-table th, .device-table td{
-	padding: 12px 15px;
-}
-
-.device-table tbody tr{
-	border-bottom: 2px solid #9494cc;
-}
-
-.device-table tbody tr:last-of-type {
-	border-bottom: 3px solid #747cdb;
-}
-
-//tabs
-.tabs{
-	position: relative;
-	min-height: 300px;
-	clear: both;
-	margin: 25px 0;
-}
-.tab{
-	float: left;
-}
-.tab label{
-	background: #eee;
-	padding: 10px;
-	border: 1px solid black;
-	margin-left: -1px;
-	position: relative;
-	left: 1px;
-}
-.tab [type=radio] {
-	display: none;
-}
-.tab-content{
-	position: absolute;
-	top: 28px;
-	left: 0;
-	background: white;
-	right: 0;
-	bottom: 0;
-	padding: 20px;
-	border: 1px solid black;
-}
-[type=radio]:checked ~ label{
-	background: white;
-	border-bottom: 1px solid white;
-	z-index: 2;
-}
-[type=radio]:checked ~ label ~ .tab-content {
-	z-index: 1;
+.panel{
+	width: 50%;
+	height: 100%;
+	padding: 0px;
+	margin: 0px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
