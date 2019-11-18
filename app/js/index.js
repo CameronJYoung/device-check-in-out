@@ -1,6 +1,6 @@
 import {auth,db,provider} from './modules/firebase';
 
-let verifyData = (object) => {
+let verifyLoginData = (object) => {
 	if ((object.phoneNumber).length !== 11) {
 		alert(`Phone Number should be an 11 digit mobile number.`);
 		document.querySelector('#main-signup-form').reset();
@@ -27,7 +27,7 @@ let signUp = () => {
 		password: document.querySelectorAll('.password-field')[0].value,
 		password2: document.querySelectorAll('.password-field')[1].value
 	}
-	if (verifyData(accountData)) {
+	if (verifyLoginData(accountData)) {
 		auth.createUserWithEmailAndPassword(accountData.email,accountData.password)
 		.then((user) => {
 			console.log('successfully created user account with uid: ', user.user.uid);
