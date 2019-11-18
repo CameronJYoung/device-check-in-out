@@ -102,43 +102,24 @@ let setNewDeviceData = () => {
 }
 
 let verifyNewDeviceData = (object) => {
-
-
-
-	if (checkDocFunction(object)) {
-
-		if ((object.deviceName).length < 2) {
-			alert(`Name to short`);
-			document.querySelector('#main-device-form').reset();
-			return false;
-		} else if ((object.deviceType).length < 2) {
-			alert(`Password has to be over 8 characters.`);
-			document.querySelector('#main-device-form').reset();
-			return false;
-		}
-		return true;
-
-	} else {
-		alert(`${object.deviceName} already exists. Ask admin to delete`);
-		document.querySelector('#main-device-form').reset();
-		return false;
-	}
-
-
-
-}
-
-let checkDocFunction = (object) => {
 	checkDoc = db.collection('devices').doc(object.deviceName);
-
-	return checkDoc.get().then((doc) => {
-		console.log(`${doc.exists} doc exists`);
-		if (doc.exists) {
-			return false;
-		} else {
-			console.log(doc.exists)
+	checkDoc.get().then(doc => {
+		const data = doc.data();
+		if (data == undefined) {
+			if ((object.deviceName).length < 2) {
+				alert(`Name to short`);
+				document.querySelector('#main-device-form').reset();
+				return false;
+			} else if ((object.deviceType).length < 2) {
+				alert(`Password has to be over 8 characters.`);
+				document.querySelector('#main-device-form').reset();
+				return false;
+			}
 			return true;
+		} else {
+			alert(`${object.deviceName} already exists. Ask admin to delete`);
+			document.querySelector('#main-device-form').reset();
+			return false;
 		}
-	});
-
+	})
 }
