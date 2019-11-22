@@ -121,9 +121,10 @@ let setButtonListeners = () => {
 	});
 }
 
+let init = () => {
+	authChangeFunction();
+	setButtonListeners();
+	generateTable();
+}
 
-
-
-authChangeFunction();
-setButtonListeners();
-generateTable();
+init();
