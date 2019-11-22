@@ -24,7 +24,7 @@ let tableElement = document.querySelector('#device-table-body');
 
 let generateTable = () => { //loop that creates rows and adds them to table
 	deviceRowArr = [];
-	for (let i = tableElement.rows.length - 1; i> 0; i--) {
+	for (let i = tableElement.rows.length; i> 0; i--) {
 		tableElement.deleteRow(i);
 
 	}
