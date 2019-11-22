@@ -1,4 +1,4 @@
-import {auth,db,provider} from './modules/firebase';
+import {auth,db} from './modules/firebase';
 
 let verifyLoginData = (object) => {
 	if ((object.phoneNumber).length !== 11) {
@@ -52,7 +52,7 @@ let logIn = () => {
 		loginEmail: document.getElementById('login-email').value,
 		loginPassword: document.getElementById('login-password').value
 	}
-	auth.signInWithEmailAndPassword(loginData.loginEmail, loginData.loginPassword).catch(function(error) {
+	auth.signInWithEmailAndPassword(loginData.loginEmail, loginData.loginPassword).catch((error) => {
 		alert(`ERROR: ${error.message}`)
 	});
 	auth.onAuthStateChanged((user) => {
