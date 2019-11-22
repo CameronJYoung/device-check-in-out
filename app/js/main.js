@@ -17,7 +17,7 @@ let data;
 
 let el;
 let deviceRowArr;
-let tableElement = document.querySelector('.device-table');
+let tableElement = document.querySelector('#device-table-body');
 
 
 
@@ -28,7 +28,6 @@ let generateTable = () => { //loop that creates rows and adds them to table
 		tableElement.deleteRow(i);
 
 	}
-
 
 	db.collection("devices").get().then((deviceCollRef) => {
 		deviceCollRef.forEach((doc) => {
@@ -44,7 +43,13 @@ let generateTable = () => { //loop that creates rows and adds them to table
 
 }
 
+let generateTableListener = () => {
 
+	db.collection('devices')
+		.onSnapshot(doc => {
+			generateTable();
+		})
+}
 
 
 
@@ -104,7 +109,6 @@ let setButtonListeners = () => {
 				if (newDeviceNameField && newDeviceTypeField && newDeviceNotesField) {
 					db.collection("devices").doc(deviceData.deviceName).set(deviceData);
 					document.getElementById('completed-register').innerHTML = `set ${deviceData.deviceName}`;
-					generateTable();
 					setTimeout(() => {
 						document.getElementById('completed-register').innerHTML = ``;
 					}, 1000);
@@ -125,6 +129,7 @@ let init = () => {
 	authChangeFunction();
 	setButtonListeners();
 	generateTable();
+	generateTableListener();
 }
 
 init();
