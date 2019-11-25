@@ -5,9 +5,9 @@ import Device from './classes/device';
 let signOutButton = document.querySelector('#sign-out-button');
 let registerDeviceButton = document.querySelector('#register-device-button');
 
-let newDeviceNameField = document.querySelector('#device-name-field');
-let newDeviceTypeField = document.querySelector('#device-type-field');
-let newDeviceNotesField = document.querySelector('#device-notes-field');
+let newDeviceNameFieldValue = document.querySelector('#device-name-field').value;
+let newDeviceTypeFieldValue = document.querySelector('#device-type-field').value;
+let newDeviceNotesFieldValue = document.querySelector('#device-notes-field').value;
 
 let newDevice;
 
@@ -76,6 +76,8 @@ let authChangeFunction = () => {
 
 			})
 		} else {
+			console.log(1);
+
 			userData = {};
 			window.location = 'index.html';
 		}
@@ -98,20 +100,14 @@ let setButtonListeners = () => {
 
 	registerDeviceButton.addEventListener('click', () => {
 		event.preventDefault();
-		deviceData = {
-			deviceName: newDeviceNameField.value,
-			deviceType: newDeviceTypeField.value,
-			deviceNotes: newDeviceNotesField.value
-		}
 
-		newDevice = new Device(newDeviceNameField.value,newDeviceNotesField.value,newDeviceTypeField.value);
-		console.log(newDevice);
+		newDevice = new Device(newDeviceNameFieldValue.value,newDeviceNotesFieldValue.value,newDeviceTypeFieldValue.value);
 
 		checkDoc = db.collection('devices').doc(deviceData.deviceName);
 		checkDoc.get().then(doc => {
 			data = doc.data();
 			if (data == undefined) {
-				if (newDeviceNameField && newDeviceTypeField && newDeviceNotesField) {
+				if (newDeviceNameFieldValue && newDeviceTypeFieldValue && newDeviceNotesFieldValue) {
 					db.collection("devices").doc(newDevice.deviceName).set(Object.assign({},newDevice));
 					document.getElementById('completed-register').innerHTML = `set ${deviceData.deviceName}`;
 					setTimeout(() => {
