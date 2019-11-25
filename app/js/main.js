@@ -1,5 +1,6 @@
 import {auth,db} from './modules/firebase';
 import {trigger,closeButton,toggleModal,windowOnClick} from './modules/modal';
+import Device from './classes/device';
 
 let signOutButton = document.querySelector('#sign-out-button');
 let registerDeviceButton = document.querySelector('#register-device-button');
@@ -8,6 +9,7 @@ let newDeviceNameField = document.querySelector('#device-name-field');
 let newDeviceTypeField = document.querySelector('#device-type-field');
 let newDeviceNotesField = document.querySelector('#device-notes-field');
 
+let newDevice;
 
 let userData = {};
 let deviceData = {}
@@ -102,12 +104,15 @@ let setButtonListeners = () => {
 			deviceNotes: newDeviceNotesField.value
 		}
 
+		newDevice = new Device(newDeviceNameField.value,newDeviceNotesField.value,newDeviceTypeField.value);
+		console.log(newDevice);
+
 		checkDoc = db.collection('devices').doc(deviceData.deviceName);
 		checkDoc.get().then(doc => {
 			data = doc.data();
 			if (data == undefined) {
 				if (newDeviceNameField && newDeviceTypeField && newDeviceNotesField) {
-					db.collection("devices").doc(deviceData.deviceName).set(deviceData);
+					db.collection("devices").doc(newDevice.deviceName).set(Object.assign({},newDevice));
 					document.getElementById('completed-register').innerHTML = `set ${deviceData.deviceName}`;
 					setTimeout(() => {
 						document.getElementById('completed-register').innerHTML = ``;
