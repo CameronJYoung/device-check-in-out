@@ -5,14 +5,14 @@ import Device from './classes/device';
 let signOutButton = document.querySelector('#sign-out-button');
 let registerDeviceButton = document.querySelector('#register-device-button');
 
-let newDeviceNameFieldValue = document.querySelector('#device-name-field').value;
-let newDeviceTypeFieldValue = document.querySelector('#device-type-field').value;
-let newDeviceNotesFieldValue = document.querySelector('#device-notes-field').value;
+let newDeviceNameFieldValue;
+let newDeviceTypeFieldValue;
+let newDeviceNotesFieldValue;
 
 let newDevice;
 
 let userData = {};
-let deviceData = {}
+let newDeviceObj;
 
 let checkDoc;
 let data;
@@ -101,15 +101,21 @@ let setButtonListeners = () => {
 	registerDeviceButton.addEventListener('click', () => {
 		event.preventDefault();
 
-		newDevice = new Device(newDeviceNameFieldValue.value,newDeviceNotesFieldValue.value,newDeviceTypeFieldValue.value);
+		newDeviceNameFieldValue = document.querySelector('#device-name-field').value;
+		newDeviceTypeFieldValue = document.querySelector('#device-type-field').value;
+		newDeviceNotesFieldValue = document.querySelector('#device-notes-field').value;
 
-		checkDoc = db.collection('devices').doc(deviceData.deviceName);
+		newDevice = new Device(newDeviceNameFieldValue,newDeviceNotesFieldValue,newDeviceTypeFieldValue);
+		newDeviceObj = Object.assign({}, newDevice);
+
+
+		checkDoc = db.collection('devices').doc(newDeviceObj.deviceName);
 		checkDoc.get().then(doc => {
 			data = doc.data();
 			if (data == undefined) {
 				if (newDeviceNameFieldValue && newDeviceTypeFieldValue && newDeviceNotesFieldValue) {
-					db.collection("devices").doc(newDevice.deviceName).set(Object.assign({},newDevice));
-					document.getElementById('completed-register').innerHTML = `set ${deviceData.deviceName}`;
+					db.collection("devices").doc(newDeviceObj.deviceName).set(newDeviceObj);
+					document.getElementById('completed-register').innerHTML = `set ${newDeviceObj.deviceName}`;
 					setTimeout(() => {
 						document.getElementById('completed-register').innerHTML = ``;
 					}, 1000);
