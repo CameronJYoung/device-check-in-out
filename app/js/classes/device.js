@@ -3,6 +3,6 @@ export default class Device{
 		this.deviceName = name,
 		this.deviceNotes = notes,
 		this.deviceType = type,
-		this.deviceAvailability = 'unavailable'
+		this.deviceAvailability = 'available'
 	}
 }

@@ -35,7 +35,7 @@ let generateTable = () => { //loop that creates rows and adds them to table
 	db.collection("devices").get().then((deviceCollRef) => {
 		deviceCollRef.forEach((doc) => {
 			data = doc.data();
-			el = `<tr><td>${data.deviceName}</td><td>${data.deviceType}</td><td>Available</td></tr>`;
+			el = `<tr><td>${data.deviceName}</td><td>${data.deviceType}</td><td>${data.deviceAvailability}</td></tr>`;
 			deviceRowArr.push(el);
 
 		});
