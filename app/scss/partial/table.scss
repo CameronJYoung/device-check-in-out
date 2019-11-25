@@ -30,3 +30,10 @@
 #device-table-body tr:last-of-type {
 	border-bottom: 3px solid #747cdb;
 }
+.dynamic-table-row{
+	cursor: pointer;
+	user-select: none;
+}
+.dynamic-table-row:hover{
+	background: rgba($color: #62e34260, $alpha: 0.5)
+}
