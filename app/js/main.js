@@ -1,9 +1,9 @@
-import {auth,db} from './modules/firebase';
-import {trigger,closeButton,toggleModal,windowOnClick} from './modules/modal';
+import {auth,db,fieldValue} from './modules/firebase';
 import Device from './classes/device';
 
 let signOutButton = document.querySelector('#sign-out-button');
 let registerDeviceButton = document.querySelector('#register-device-button');
+let currentUser;
 
 let newDeviceNameFieldValue;
 let newDeviceTypeFieldValue;
@@ -13,6 +13,17 @@ let newDevice;
 
 let userData = {};
 let newDeviceObj;
+
+let currentDeviceButton;
+
+let checkOutSelect = document.getElementById('device-select-out');
+let checkOutButton = document.getElementById('device-button-out');
+let checkOutDate = document.getElementById('device-date-out');
+let checkOutTime = document.getElementById('device-time-out');
+let checkOutDateVal;
+let checkOutTimeVal;
+let selectValue;
+let checkOutData = {};//set data to this object then add it to the one on database
 
 let checkDoc;
 let data;
@@ -32,7 +43,7 @@ let generateTable = () => { //loop that creates rows and adds them to table
 
 	}
 
-	db.collection("devices").get().then((deviceCollRef) => {
+	db.collection("devices").get().then(deviceCollRef => {
 		deviceCollRef.forEach((doc) => {
 			data = doc.data();
 			el = `<tr class="dynamic-table-row" ><td>${data.deviceName}</td><td>${data.deviceType}</td><td>${data.deviceAvailability}</td></tr>`;
@@ -50,10 +61,75 @@ let generateTableListener = () => {
 	db.collection('devices')
 		.onSnapshot(doc => {
 			generateTable();
+			generateSelections();
+			CheckInInit();
 		})
 }
 
+let generateSelections = () => {
+	document.querySelectorAll('.device-option-out').forEach(n => n.remove());
+	db.collection("devices").where('deviceAvailability', '==', 'available').get().then(function(querySnapshot) {
+		querySnapshot.forEach(function(doc) {
+			doc = doc.data();
+			el = `<option value="${doc.deviceName}" class="device-option-out">${doc.deviceName}</option>`;
+			checkOutSelect.insertAdjacentHTML('beforeend', el);
+		});
+	});
+}
 
+let CheckOutInit = (event) => {
+
+	event.preventDefault();
+
+	selectValue = document.getElementsByTagName("option")[checkOutSelect.selectedIndex].value;
+	checkOutDateVal = checkOutDate.value;
+	checkOutTimeVal = checkOutTime.value;
+	console.log(`${checkOutDate} + ${checkOutTime}`);
+
+	checkOutData = {
+		checkOutUserId : auth.currentUser.uid,
+		checkOutUserEmail : auth.currentUser.email,
+		checkOutTime : checkOutTimeVal,
+		checkOutDate : checkOutDateVal,
+		deviceAvailability: 'unavailable'
+	} // add time restrictions
+	console.log(checkOutData);
+
+	db.collection("devices").doc(selectValue).update(checkOutData);
+
+
+}
+
+let CheckInInit = () => {
+	currentUser = auth.currentUser.uid;
+	document.querySelectorAll('.device-list-item').forEach(n => n.remove());
+	db.collection("devices").where('checkOutUserId', '==', currentUser).get().then(function(querySnapshot) {
+		querySnapshot.forEach(function(doc) {
+			doc = doc.data();
+			el = `<li class="device-list-item" data-devicename="${doc.deviceName}">${doc.deviceName}
+			<button class="device-list-item-button" data-devicename="${doc.deviceName}">Check In</button></li>`;
+
+			document.getElementById('device-out-list').insertAdjacentHTML('beforeend', el);
+
+		});
+
+		document.querySelectorAll('.device-list-item-button').forEach(item => {
+			item.addEventListener('click', checkInItem);
+		});
+	});
+}
+
+let checkInItem = (event) => {
+	currentDeviceButton = event.toElement;
+	db.collection("devices").doc(currentDeviceButton.getAttribute('data-devicename')).update({
+		checkOutDate: fieldValue.delete(),
+		checkOutTime: fieldValue.delete(),
+		checkOutUserEmail: fieldValue.delete(),
+		checkOutUserId: fieldValue.delete(),
+		deviceAvailability: 'available'
+	});
+	currentDeviceButton.parentElement.remove();
+}
 
 
 let authChangeFunction = () => {
@@ -71,13 +147,13 @@ let authChangeFunction = () => {
 					userPhone: data.phone
 				}
 
+
+
 			}).catch(error => {
 				console.log(error);
 
 			})
 		} else {
-			console.log(1);
-
 			userData = {};
 			window.location = 'index.html';
 		}
@@ -85,10 +161,6 @@ let authChangeFunction = () => {
 }
 
 let setButtonListeners = () => {
-
-	trigger.addEventListener("click", toggleModal);
-	closeButton.addEventListener("click", toggleModal);
-	window.addEventListener("click", windowOnClick);
 
 	signOutButton.addEventListener('click', () => {
 		auth.signOut().then(() => {//sign out successful
@@ -98,7 +170,7 @@ let setButtonListeners = () => {
 		})
 	});
 
-	registerDeviceButton.addEventListener('click', () => {
+	registerDeviceButton.addEventListener('click', (event) => {
 		event.preventDefault();
 
 		newDeviceNameFieldValue = document.querySelector('#device-name-field').value;
@@ -130,6 +202,10 @@ let setButtonListeners = () => {
 			}
 		})
 	});
+
+	checkOutButton.addEventListener('click', CheckOutInit);
+
+
 }
 
 let init = () => {

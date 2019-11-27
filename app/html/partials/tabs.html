@@ -3,8 +3,15 @@
 		<input type="radio" id="tab-1" name="tab-group-1" checked>
 		<label for="tab-1">Check in/out</label>
 		<div class="tab-content">
-			Device Check in/out tab section
-			<button class="modal-trigger">User Information</button>
+			<p>Current Devices<span id="device-out-counter"></span></p>
+			<ul id="device-out-list">
+
+			</ul>
+
+			<p>Check Out New Device</p>
+			<select id="device-select-out"></select><br>
+			<input type="time" name="check-out-time" min="09:00" max="18:00" id="device-time-out"><input type="date" name="check-out-date" id="device-date-out"><br>
+			<button id="device-button-out">Check Out</button>
 		</div>
 	</div>
 

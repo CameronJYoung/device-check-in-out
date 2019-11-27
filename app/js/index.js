@@ -17,7 +17,7 @@ let verifyLoginData = (object) => {
 	return true;
 }
 
-let signUp = () => {
+let signUp = (event) => {
 	event.preventDefault();
 	let accountData = {
 		firstName: document.getElementById('first-name-field').value,
@@ -46,7 +46,7 @@ let signUp = () => {
 	}
 }
 
-let logIn = () => {
+let logIn = (event) => {
 	event.preventDefault();
 	let loginData = {
 		loginEmail: document.getElementById('login-email').value,
@@ -65,5 +65,5 @@ let logIn = () => {
 
 }
 
-document.querySelector('#signupButton').addEventListener('click', signUp);
-document.querySelector('#loginButton').addEventListener('click', logIn);
+document.querySelector('#signupButton').addEventListener('click', signUp, false);
+document.querySelector('#loginButton').addEventListener('click', logIn, false);
