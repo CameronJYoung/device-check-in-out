@@ -69,6 +69,7 @@ let generateTableListener = () => {
 let generateSelections = () => {
 	document.querySelectorAll('.device-option-out').forEach(n => n.remove());
 	db.collection("devices").where('deviceAvailability', '==', 'available').get().then(function(querySnapshot) {
+
 		querySnapshot.forEach(function(doc) {
 			doc = doc.data();
 			el = `<option value="${doc.deviceName}" class="device-option-out">${doc.deviceName}</option>`;
@@ -84,7 +85,6 @@ let CheckOutInit = (event) => {
 	selectValue = document.getElementsByTagName("option")[checkOutSelect.selectedIndex].value;
 	checkOutDateVal = checkOutDate.value;
 	checkOutTimeVal = checkOutTime.value;
-	console.log(`${checkOutDate} + ${checkOutTime}`);
 
 	checkOutData = {
 		checkOutUserId : auth.currentUser.uid,
@@ -93,11 +93,8 @@ let CheckOutInit = (event) => {
 		checkOutDate : checkOutDateVal,
 		deviceAvailability: 'unavailable'
 	} // add time restrictions
-	console.log(checkOutData);
 
 	db.collection("devices").doc(selectValue).update(checkOutData);
-
-
 }
 
 let CheckInInit = () => {
@@ -112,10 +109,12 @@ let CheckInInit = () => {
 			document.getElementById('device-out-list').insertAdjacentHTML('beforeend', el);
 
 		});
-
+		document.getElementById('device-out-counter').innerHTML = `(${document.getElementById('device-out-list').childNodes.length - 1})`;
 		document.querySelectorAll('.device-list-item-button').forEach(item => {
 			item.addEventListener('click', checkInItem);
 		});
+
+
 	});
 }
 
