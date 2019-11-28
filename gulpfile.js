@@ -77,8 +77,9 @@ let browserSyncTask = (done) => {
 		server: {
 			baseDir: './dist',
 			index: 'index.html',
-			notify: false
-		}
+		},
+		notify: false,
+		ghostMode: false
 	});
 	done();
 }

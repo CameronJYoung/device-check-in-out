@@ -18,10 +18,6 @@ let currentDeviceButton;
 
 let checkOutSelect = document.getElementById('device-select-out');
 let checkOutButton = document.getElementById('device-button-out');
-let checkOutDate = document.getElementById('device-date-out');
-let checkOutTime = document.getElementById('device-time-out');
-let checkOutDateVal;
-let checkOutTimeVal;
 let selectValue;
 let checkOutData = {};//set data to this object then add it to the one on database
 
@@ -31,10 +27,7 @@ let data;
 let el;
 let deviceRowArr;
 let tableElement = document.querySelector('.device-table');
-let tableBody = document.querySelector('#device-table-body')
-
-
-
+let tableBody = document.querySelector('#device-table-body');
 
 let generateTable = () => { //loop that creates rows and adds them to table
 	deviceRowArr = [];
@@ -83,18 +76,16 @@ let CheckOutInit = (event) => {
 	event.preventDefault();
 
 	selectValue = document.getElementsByTagName("option")[checkOutSelect.selectedIndex].value;
-	checkOutDateVal = checkOutDate.value;
-	checkOutTimeVal = checkOutTime.value;
 
 	checkOutData = {
 		checkOutUserId : auth.currentUser.uid,
 		checkOutUserEmail : auth.currentUser.email,
-		checkOutTime : checkOutTimeVal,
-		checkOutDate : checkOutDateVal,
 		deviceAvailability: 'unavailable'
-	} // add time restrictions
+	}
 
 	db.collection("devices").doc(selectValue).update(checkOutData);
+
+
 }
 
 let CheckInInit = () => {
@@ -119,10 +110,8 @@ let CheckInInit = () => {
 }
 
 let checkInItem = (event) => {
-	currentDeviceButton = event.toElement;
+	currentDeviceButton = event.target;
 	db.collection("devices").doc(currentDeviceButton.getAttribute('data-devicename')).update({
-		checkOutDate: fieldValue.delete(),
-		checkOutTime: fieldValue.delete(),
 		checkOutUserEmail: fieldValue.delete(),
 		checkOutUserId: fieldValue.delete(),
 		deviceAvailability: 'available'
