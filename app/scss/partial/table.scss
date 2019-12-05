@@ -1,39 +1,67 @@
 //Table
 .device-table {
-	border-collapse: collapse;
-	margin: 15px 0;
-	font-size: 16px;
-	min-width: 340px;
+    border-collapse: collapse;
+    margin: 15px 0;
+    font-size: 16px;
+	width: 380px;
+	table-layout: fixed;
+    border-collapse: collapse;
+
 }
 
 .device-table caption{
-	padding-bottom: 10px;
-	font-weight: bold;
-	font-size: 20px;
+    padding-bottom: 10px;
+    font-weight: bold;
+    font-size: 20px;
 }
 
 .device-table thead tr {
-	background: #747cdb;
-	color: white;
-	text-align: left;
+    background: #747cdb;
+    color: white;
 	font-weight: bold;
+	display: block;
+	height: 40px;
+	display: flex;
+	justify-content: center;
+	text-align: center;
+	align-items: center;
 }
 
 .device-table th, .device-table td{
-	padding: 12px 15px;
+    padding: 12px 15px;
 }
 
 #device-table-body tr{
 	border-bottom: 2px solid #9494cc;
+	height: 50px;
+	overflow: hidden;
 }
 
 #device-table-body tr:last-of-type {
-	border-bottom: 3px solid #747cdb;
+    border-bottom: 3px solid #747cdb;
 }
 .dynamic-table-row{
-	cursor: pointer;
-	user-select: none;
+    cursor: pointer;
+    user-select: none;
 }
 .dynamic-table-row:hover{
-	background: rgba($color: #62e34260, $alpha: 0.5)
+    background: rgba($color: #62e34260, $alpha: 0.5)
+}
+
+.device-table tbody{
+  display:block;
+  width: 100%;
+  overflow: auto;
+  height: 260px;
+}
+
+.device-table thead {
+  background: black;
+  color:#fff;
+}
+
+.device-table th, .device-table td {
+  padding: 5px;
+  text-align: center;
+  width: 150px;
 }

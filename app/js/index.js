@@ -1,7 +1,10 @@
 import {auth,db} from './modules/firebase';
+import NewUser from './classes/newUser';
+
+let accountData;
 
 let verifyLoginData = (object) => {
-	if ((object.phoneNumber).length !== 11) {
+	if ((object.phone).length !== 11) {
 		alert(`Phone Number should be an 11 digit mobile number.`);
 		document.querySelector('#main-signup-form').reset();
 		return false;
@@ -19,24 +22,23 @@ let verifyLoginData = (object) => {
 
 let signUp = (event) => {
 	event.preventDefault();
-	let accountData = {
-		firstName: document.getElementById('first-name-field').value,
-		secondName: document.getElementById('second-name-field').value,
-		phoneNumber: document.getElementById('phone-number-field').value,
-		email: document.getElementById('email-field').value,
-		password: document.querySelectorAll('.password-field')[0].value,
-		password2: document.querySelectorAll('.password-field')[1].value
-	}
+
+	accountData = new NewUser(
+		document.getElementById('first-name-field').value,
+		document.getElementById('second-name-field').value,
+		document.getElementById('phone-number-field').value,
+		document.getElementById('email-field').value,
+		document.querySelectorAll('.password-field')[0].value,
+		document.querySelectorAll('.password-field')[1].value
+	)
+	accountData = Object.assign({}, accountData);
 	if (verifyLoginData(accountData)) {
 		auth.createUserWithEmailAndPassword(accountData.email,accountData.password)
 		.then((user) => {
-			console.log('successfully created user account with uid: ', user.user.uid);
-			db.collection("users").doc(user.user.uid).set({
-				first: accountData.firstName,
-				last: accountData.secondName,
-				phone: accountData.phoneNumber,
-				email: accountData.email,
-			})
+			alert('successfully created user account');
+			delete accountData.password;
+			delete accountData.password2;
+			db.collection("users").doc(user.user.uid).set(accountData)
 			document.querySelector('#main-signup-form').reset();
 		})
 		.catch((error) => {

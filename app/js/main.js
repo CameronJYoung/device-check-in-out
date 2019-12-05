@@ -21,6 +21,9 @@ let checkOutButton = document.getElementById('device-button-out');
 let selectValue;
 let checkOutData = {};//set data to this object then add it to the one on database
 
+let deviceOutHrs = document.querySelector('#device-check-in-time-hours')
+let deviceOutMins = document.querySelector('#device-check-in-time-mins')
+
 let checkDoc;
 let data;
 
@@ -33,13 +36,12 @@ let generateTable = () => { //loop that creates rows and adds them to table
 	deviceRowArr = [];
 	for (let i = tableElement.rows.length - 1; i> 0; i--) {
 		tableElement.deleteRow(i);
-
 	}
 
 	db.collection("devices").get().then(deviceCollRef => {
 		deviceCollRef.forEach((doc) => {
 			data = doc.data();
-			el = `<tr class="dynamic-table-row" ><td>${data.deviceName}</td><td>${data.deviceType}</td><td>${data.deviceAvailability}</td></tr>`;
+			el = `<tr class="dynamic-table-row"><td>${data.deviceName}</td><td>${data.deviceType}</td><td>${data.deviceAvailability}</td></tr>`;
 			deviceRowArr.push(el);
 
 		});
@@ -61,7 +63,7 @@ let generateTableListener = () => {
 
 let generateSelections = () => {
 	document.querySelectorAll('.device-option-out').forEach(n => n.remove());
-	db.collection("devices").where('deviceAvailability', '==', 'available').get().then(function(querySnapshot) {
+	db.collection("devices").where('deviceAvailability', '==', 'available').get().then(querySnapshot => {
 
 		querySnapshot.forEach(function(doc) {
 			doc = doc.data();
@@ -71,20 +73,34 @@ let generateSelections = () => {
 	});
 }
 
+let checkOutValidation = () => {
+	if (deviceOutHrs.value && deviceOutMins.value != '') {
+		return true;
+	} else {
+		return false;
+	}
+}
+
 let CheckOutInit = (event) => {
 
 	event.preventDefault();
+	if (checkOutValidation()) {
 
-	selectValue = document.getElementsByTagName("option")[checkOutSelect.selectedIndex].value;
 
-	checkOutData = {
-		checkOutUserId : auth.currentUser.uid,
-		checkOutUserEmail : auth.currentUser.email,
-		deviceAvailability: 'unavailable'
+		selectValue = document.getElementsByTagName("option")[checkOutSelect.selectedIndex].value;
+
+		checkOutData = {
+			checkOutUserId : auth.currentUser.uid,
+			checkOutUserEmail : auth.currentUser.email,
+			deviceAvailability: 'unavailable'
+		}
+
+		db.collection("devices").doc(selectValue).update(checkOutData);
+
+	} else {
+		alert('check out failed :(');
+
 	}
-
-	db.collection("devices").doc(selectValue).update(checkOutData);
-
 
 }
 

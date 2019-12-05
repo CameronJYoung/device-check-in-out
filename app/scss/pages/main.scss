@@ -13,3 +13,7 @@
 .device-list-item:hover{
 	cursor: default;
 }
+#device-out-list{
+	overflow-y: scroll;
+	max-height: 60px;
+}
