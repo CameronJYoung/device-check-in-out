@@ -29,16 +29,18 @@ let signUp = (event) => {
 		document.getElementById('phone-number-field').value,
 		document.getElementById('email-field').value,
 		document.querySelectorAll('.password-field')[0].value,
-		document.querySelectorAll('.password-field')[1].value
+		document.querySelectorAll('.password-field')[1].value,
 	)
-	accountData = Object.assign({}, accountData);
+
 	if (verifyLoginData(accountData)) {
 		auth.createUserWithEmailAndPassword(accountData.email,accountData.password)
 		.then((user) => {
 			alert('successfully created user account');
 			delete accountData.password;
 			delete accountData.password2;
-			db.collection("users").doc(user.user.uid).set(accountData)
+			accountData.uid = user.user.uid;
+			accountData = Object.assign({}, accountData);
+			db.collection("users").doc(user.user.uid).set(accountData);
 			document.querySelector('#main-signup-form').reset();
 		})
 		.catch((error) => {
