@@ -30,9 +30,11 @@ let convertScssTask = (done) => {
 	gulp.src('./app/scss/*.scss')
 		.pipe(sass().on('error', sass.logError))
 		.pipe(gulp.dest('./dist/css'))
+		.pipe(browserSync.stream());
 	gulp.src('./app/scss/pages/*.scss')
 		.pipe(sass().on('error', sass.logError))
-		.pipe(gulp.dest('./dist/css/pages'));
+		.pipe(gulp.dest('./dist/css/pages'))
+		.pipe(browserSync.stream());
 	done();
 }
 

@@ -1,4 +1,5 @@
 import {auth,db,fieldValue} from './modules/firebase';
+import Modal from './modules/modal';
 import Device from './classes/device';
 
 let signOutButton = document.querySelector('#sign-out-button');
@@ -32,6 +33,24 @@ let deviceRowArr;
 let tableElement = document.querySelector('.device-table');
 let tableBody = document.querySelector('#device-table-body');
 
+let modalDeviceName;
+let modalDeviceType;
+let modalDeviceAvailability;
+
+let viewDeviceModal = (event) => {
+	event.preventDefault();
+	Modal.openModal('device');
+
+	modalDeviceName = event.path[1].childNodes[0].innerHTML;
+	modalDeviceType = event.path[1].childNodes[1].innerHTML;
+	modalDeviceAvailability = event.path[1].childNodes[2].innerHTML;
+
+	document.getElementById('modal-device-name').innerHTML = `Device Name: ${modalDeviceName}`;
+	document.getElementById('modal-device-type').innerHTML = `Device Type: ${modalDeviceType}`;
+	document.getElementById('modal-device-availability').innerHTML = `Device Availability: ${modalDeviceAvailability}`;
+
+}
+
 let generateTable = () => { //loop that creates rows and adds them to table
 	deviceRowArr = [];
 	for (let i = tableElement.rows.length - 1; i> 0; i--) {
@@ -41,12 +60,18 @@ let generateTable = () => { //loop that creates rows and adds them to table
 	db.collection("devices").get().then(deviceCollRef => {
 		deviceCollRef.forEach((doc) => {
 			data = doc.data();
-			el = `<tr class="dynamic-table-row"><td>${data.deviceName}</td><td>${data.deviceType}</td><td>${data.deviceAvailability}</td></tr>`;
+			el = `<tr class="dynamic-table-row"><td>${data.deviceName}</td><td>${data.deviceType}</td><td>${data.deviceAvailability}</td></tr>`;``
+
 			deviceRowArr.push(el);
 
 		});
 		deviceRowArr = deviceRowArr.join(' ');
 		tableBody.insertAdjacentHTML('beforeend', deviceRowArr);
+
+		document.querySelectorAll('.dynamic-table-row').forEach((el) => {
+			el.addEventListener('click', viewDeviceModal)
+		})
+
 	});
 
 
@@ -214,6 +239,7 @@ let setButtonListeners = () => {
 
 let init = () => {
 	authChangeFunction();
+	Modal.init();
 	setButtonListeners();
 	generateTable();
 	generateTableListener();
