@@ -40,7 +40,7 @@ let modalDeviceAvailability;
 let viewDeviceModal = (event) => {
 	event.preventDefault();
 
-	Modal.openModal('device');
+
 
 	modalDeviceName = event.path[1].childNodes[0].innerHTML;
 	console.log(modalDeviceName);
@@ -59,7 +59,7 @@ let viewDeviceModal = (event) => {
 
 	})
 
-
+	Modal.openModal('device');
 
 
 }
