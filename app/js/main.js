@@ -39,17 +39,31 @@ let modalDeviceAvailability;
 
 let viewDeviceModal = (event) => {
 	event.preventDefault();
+
 	Modal.openModal('device');
 
 	modalDeviceName = event.path[1].childNodes[0].innerHTML;
-	modalDeviceType = event.path[1].childNodes[1].innerHTML;
-	modalDeviceAvailability = event.path[1].childNodes[2].innerHTML;
+	console.log(modalDeviceName);
 
-	document.getElementById('modal-device-name').innerHTML = `Device Name: ${modalDeviceName}`;
-	document.getElementById('modal-device-type').innerHTML = `Device Type: ${modalDeviceType}`;
-	document.getElementById('modal-device-availability').innerHTML = `Device Availability: ${modalDeviceAvailability}`;
+	db.collection("devices").doc(modalDeviceName).get().then(doc => {
+		doc = doc.data();
+
+		modalDeviceName = doc.deviceName;
+		modalDeviceType = doc.deviceType;
+		modalDeviceAvailability = doc.deviceAvailability;
+
+		document.getElementById('modal-device-name').innerHTML = `Device Name: ${modalDeviceName}`;
+		document.getElementById('modal-device-type').innerHTML = `Device Type: ${modalDeviceType}`;
+		document.getElementById('modal-device-availability').innerHTML = `Device Availability: ${modalDeviceAvailability}`;
+
+
+	})
+
+
+
 
 }
+
 
 let generateTable = () => { //loop that creates rows and adds them to table
 	deviceRowArr = [];
