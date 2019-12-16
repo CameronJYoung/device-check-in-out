@@ -1,69 +1,168 @@
+//Imports
 import {auth,db,fieldValue} from './modules/firebase';
 import Modal from './modules/modal';
 import Device from './classes/device';
 
+//DOM selection
 let signOutButton = document.querySelector('#sign-out-button');
 let registerDeviceButton = document.querySelector('#register-device-button');
-let currentUser;
+let checkOutSelect = document.getElementById('device-select-out');
+let checkOutButton = document.getElementById('device-button-out');
+let deviceOutHrs = document.querySelector('#device-check-in-time-hours');
+let deviceOutMins = document.querySelector('#device-check-in-time-mins');
+let tableElement = document.querySelector('.device-table');
+let tableBody = document.querySelector('#device-table-body');
+let deviceCheckInAdminSelect = document.querySelector('#admin-device-check-in-select');
+let deviceCheckOutAdminSelect = document.querySelector('#admin-device-check-out-select');
+let userCheckOutAdminSelect = document.querySelector('#admin-user-check-out-select');
+let deviceModalName = document.getElementById('modal-device-name');
+let deviceModalType = document.getElementById('modal-device-type');
+let deviceModalAvailability = document.getElementById('modal-device-availability');
+let adminDeviceButton = document.getElementById('main-admin-devices-button');
+let adminDeviceCheckInButton = document.querySelector('#admin-check-in-button');
+let adminDeviceCheckOutButton = document.querySelector('#admin-check-out-button');
+let adminPropertiesButton = document.querySelector('#main-admin-properties-button');
+let adminDeviceDeleteSelect = document.querySelector('#admin-device-delete-select'); // 1
+let adminDeviceDeleteButton = document.querySelector('#admin-device-delete-button'); // 2
 
+//Global variables
+let currentUser;
 let newDeviceNameFieldValue;
 let newDeviceTypeFieldValue;
 let newDeviceNotesFieldValue;
-
 let newDevice;
-
 let userData = {};
 let newDeviceObj;
-
 let currentDeviceButton;
-
-let checkOutSelect = document.getElementById('device-select-out');
-let checkOutButton = document.getElementById('device-button-out');
 let selectValue;
-let checkOutData = {};//set data to this object then add it to the one on database
-
-let deviceOutHrs = document.querySelector('#device-check-in-time-hours')
-let deviceOutMins = document.querySelector('#device-check-in-time-mins')
-
+let checkOutData = {};
 let checkDoc;
 let data;
-
 let el;
 let deviceRowArr;
-let tableElement = document.querySelector('.device-table');
-let tableBody = document.querySelector('#device-table-body');
-
 let modalDeviceName;
 let modalDeviceType;
 let modalDeviceAvailability;
+let adminCheckOutUserArr = [];
+let adminCheckOutUserVal;
+let adminCheckOutDeviceVal;
+let counterDeviceArr = [];
 
-let viewDeviceModal = (event) => {
-	event.preventDefault();
-
-
-
-	modalDeviceName = event.path[1].childNodes[0].innerHTML;
-	console.log(modalDeviceName);
-
-	db.collection("devices").doc(modalDeviceName).get().then(doc => {
-		doc = doc.data();
-
-		modalDeviceName = doc.deviceName;
-		modalDeviceType = doc.deviceType;
-		modalDeviceAvailability = doc.deviceAvailability;
-
-		document.getElementById('modal-device-name').innerHTML = `Device Name: ${modalDeviceName}`;
-		document.getElementById('modal-device-type').innerHTML = `Device Type: ${modalDeviceType}`;
-		document.getElementById('modal-device-availability').innerHTML = `Device Availability: ${modalDeviceAvailability}`;
+//Functions
+let adminProperties = () => {
+	console.log(123);
 
 
-	})
 
-	Modal.openModal('device');
+	Modal.openModal('properties-admin');
+}
+
+let adminDeleteFunc = () => {
+	console.log(adminDeviceDeleteSelect.value);
+
+	db.collection("devices").doc(adminDeviceDeleteSelect.value).delete();
 
 
 }
 
+let adminDeviceButtonFunc = () => {
+	manageDeviceAdminSelectGenerator();
+	Modal.openModal('device-admin');
+}
+
+let adminDeviceCheckIn = (event) => {
+	event.preventDefault();
+
+	db.collection("devices").doc(document.querySelector('#admin-device-check-in-select').value).update({
+		checkOutUserEmail: fieldValue.delete(),
+		checkOutUserId: fieldValue.delete(),
+		deviceAvailability: 'available'
+	});
+}
+
+let adminDeviceCheckOut = (event) => {
+	event.preventDefault();
+
+	adminCheckOutDeviceVal = document.querySelector('#admin-device-check-out-select').value;
+	adminCheckOutUserVal = document.querySelector('#admin-user-check-out-select').value;
+
+	db.collection('users').doc(adminCheckOutUserVal).get().then(function(doc) {
+		doc = doc.data();
+		checkOutData = {
+			checkOutUserId : adminCheckOutUserVal,
+			checkOutUserEmail : doc.email,
+			deviceAvailability: 'unavailable'
+		}
+		db.collection('devices').doc(adminCheckOutDeviceVal).update(checkOutData);
+
+	}).catch(function(error) {
+		console.log("Error getting document:", error);
+	});
+}
+
+let manageDeviceAdminSelectGenerator = () => {
+	if (document.querySelectorAll('.admin-select-generated').length > 0) {
+		document.querySelectorAll('.admin-select-generated').forEach(selectItem => {
+			selectItem.remove()
+		})
+	}
+
+	db.collection("devices").where('deviceAvailability', '==', 'unavailable').get().then(querySnapshot => {
+
+		querySnapshot.forEach(function(doc) {
+			doc = doc.data();
+			el = `<option value="${doc.deviceName}" class="device-admin-in admin-select-generated">${doc.deviceName}</option>`;
+			deviceCheckInAdminSelect.insertAdjacentHTML('beforeend', el);
+		});
+	});
+
+	db.collection("devices").where('deviceAvailability', '==', 'available').get().then(querySnapshot => {
+
+		querySnapshot.forEach(function(doc) {
+			doc = doc.data();
+			el = `<option value="${doc.deviceName}" class="device-admin-out admin-select-generated">${doc.deviceName}</option>`;
+			deviceCheckOutAdminSelect.insertAdjacentHTML('beforeend', el);
+		});
+	});
+
+	db.collection('users').get().then(snapshot => {
+		snapshot.forEach(doc => {
+			doc = doc.data();
+			el = `<option value="${doc.uid}" class="user-admin-out admin-select-generated">${doc.first} ${doc.last}</option>`;
+			userCheckOutAdminSelect.insertAdjacentHTML('beforeend', el);
+		});
+	  })
+	  .catch(err => {
+		alert('Error getting documents', err);
+	  });
+
+
+	db.collection('devices').get().then(snapshot => {
+		snapshot.forEach(doc => {
+			doc = doc.data();
+			el = `<option value="${doc.deviceName}" class="user-admin-out admin-select-generated">${doc.deviceName}</option>`;
+			adminDeviceDeleteSelect.insertAdjacentHTML('beforeend', el);
+		});
+	})
+	.catch(err => {
+		alert('Error getting documents', err);
+	});
+}
+
+let viewDeviceModal = (event) => {
+	event.preventDefault();
+	modalDeviceName = event.path[1].childNodes[0].innerHTML;
+	db.collection("devices").doc(modalDeviceName).get().then(doc => {
+		doc = doc.data();
+		modalDeviceName = doc.deviceName;
+		modalDeviceType = doc.deviceType;
+		modalDeviceAvailability = doc.deviceAvailability;
+		deviceModalName.innerHTML = `Device Name: ${modalDeviceName}`;
+		deviceModalType.innerHTML = `Device Type: ${modalDeviceType}`;
+		deviceModalAvailability.innerHTML = `Device Availability: ${modalDeviceAvailability}`;
+	})
+	Modal.openModal('device');
+}
 
 let generateTable = () => { //loop that creates rows and adds them to table
 	deviceRowArr = [];
@@ -85,20 +184,9 @@ let generateTable = () => { //loop that creates rows and adds them to table
 		document.querySelectorAll('.dynamic-table-row').forEach((el) => {
 			el.addEventListener('click', viewDeviceModal)
 		})
-
 	});
-
-
 }
 
-let generateTableListener = () => {
-	db.collection('devices')
-		.onSnapshot(doc => {
-			generateTable();
-			generateSelections();
-			CheckInInit();
-		})
-}
 
 let generateSelections = () => {
 	document.querySelectorAll('.device-option-out').forEach(n => n.remove());
@@ -121,11 +209,9 @@ let checkOutValidation = () => {
 }
 
 let CheckOutInit = (event) => {
-
 	event.preventDefault();
+
 	if (checkOutValidation()) {
-
-
 		selectValue = document.getElementsByTagName("option")[checkOutSelect.selectedIndex].value;
 
 		checkOutData = {
@@ -133,14 +219,10 @@ let CheckOutInit = (event) => {
 			checkOutUserEmail : auth.currentUser.email,
 			deviceAvailability: 'unavailable'
 		}
-
 		db.collection("devices").doc(selectValue).update(checkOutData);
-
 	} else {
 		alert('check out failed :(');
-
 	}
-
 }
 
 let CheckInInit = () => {
@@ -155,7 +237,17 @@ let CheckInInit = () => {
 			document.getElementById('device-out-list').insertAdjacentHTML('beforeend', el);
 
 		});
-		document.getElementById('device-out-counter').innerHTML = `(${document.getElementById('device-out-list').childNodes.length - 1})`;
+		counterDeviceArr = [];
+		db.collection('devices').where('deviceAvailability', '==', 'unavailable')
+		.where('checkOutUserId','==',currentUser)
+		.get().then(querySnapshot => {
+			querySnapshot.forEach(doc => {
+				doc = doc.data();
+				counterDeviceArr.push(doc);
+			})
+			document.getElementById('device-out-counter').innerHTML = `(${counterDeviceArr.length})`;
+		})
+
 		document.querySelectorAll('.device-list-item-button').forEach(item => {
 			item.addEventListener('click', checkInItem);
 		});
@@ -246,17 +338,33 @@ let setButtonListeners = () => {
 		})
 	});
 
-	checkOutButton.addEventListener('click', CheckOutInit);
+	checkOutButton.addEventListener('click', CheckOutInit, false);
+	adminDeviceButton.addEventListener('click', adminDeviceButtonFunc, false);
+	adminDeviceCheckInButton.addEventListener('click', adminDeviceCheckIn, false);
+	adminDeviceCheckOutButton.addEventListener('click', adminDeviceCheckOut, false);
+	adminDeviceDeleteButton.addEventListener('click', adminDeleteFunc, false);
+	adminPropertiesButton.addEventListener('click', adminProperties, false);
 
 
 }
 
+let generateTableListener = () => {
+	db.collection('devices')
+		.onSnapshot(doc => {
+			generateTable();
+			generateSelections();
+			manageDeviceAdminSelectGenerator();
+			CheckInInit();
+		})
+}
+
 let init = () => {
+	setButtonListeners();
 	authChangeFunction();
 	Modal.init();
-	setButtonListeners();
 	generateTable();
 	generateTableListener();
+
 }
 
 init();
