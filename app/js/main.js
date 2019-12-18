@@ -22,8 +22,18 @@ let adminDeviceButton = document.getElementById('main-admin-devices-button');
 let adminDeviceCheckInButton = document.querySelector('#admin-check-in-button');
 let adminDeviceCheckOutButton = document.querySelector('#admin-check-out-button');
 let adminPropertiesButton = document.querySelector('#main-admin-properties-button');
-let adminDeviceDeleteSelect = document.querySelector('#admin-device-delete-select'); // 1
-let adminDeviceDeleteButton = document.querySelector('#admin-device-delete-button'); // 2
+let adminDeviceDeleteSelect = document.querySelector('#admin-device-delete-select');
+let adminDeviceDeleteButton = document.querySelector('#admin-device-delete-button');
+
+let adminCreatePropInput = document.querySelector('#admin-add-prop-input');
+let adminCreatePropButton = document.querySelector('#admin-add-prop-button');
+let adminDelPropSelect = document.querySelector('#admin-delete-prop-select');
+let adminDelPropButton = document.querySelector('#admin-delete-prop-button');
+let adminAddValueSelect = document.querySelector('#admin-add-value-select');
+let adminAddValueInput = document.querySelector('#admin-add-value-input');
+let adminAddValueButton = document.querySelector('#admin-add-value-button');
+let adminDelValueSelect = document.querySelector('#admin-del-value-select');
+let adminDelValueButton = document.querySelector('#admin-del-value-button');
 
 //Global variables
 let currentUser;
@@ -48,21 +58,107 @@ let adminCheckOutUserVal;
 let adminCheckOutDeviceVal;
 let counterDeviceArr = [];
 
+let propertyValueName;
+let propertyValueArr = [];
+
 //Functions
 let adminProperties = () => {
-	console.log(123);
-
-
-
+	adminGeneratePropValData();
 	Modal.openModal('properties-admin');
 }
 
+let adminAddPropertyFunc = (event) => {
+	event.preventDefault();
+
+	db.collection("properties").doc(adminCreatePropInput.value).set({
+		name: adminCreatePropInput.value
+	})
+	.then(function() {
+		console.log("Document successfully written!");
+	})
+	.catch(function(error) {
+		console.error("Error writing document: ", error);
+	});
+}
+
+let adminDelPropertyFunc = (event) => {
+	event.preventDefault();
+
+	db.collection("properties").doc(adminDelPropSelect.value).delete().then(function() {
+		console.log("Document successfully deleted!");
+	}).catch(function(error) {
+		console.log('error removing document: ', error);
+	})
+
+
+}
+
+let adminAddValueFunc = (event) => {
+	event.preventDefault();
+
+	propertyValueName = `${adminAddValueSelect.value}-${adminAddValueInput.value}`;
+
+	db.collection('properties').doc(adminAddValueSelect.value).update({
+		[propertyValueName] : adminAddValueInput.value
+	})
+	.then(function() {
+		console.log("Document successfully written!");
+	})
+	.catch(function(error) {
+		console.error("Error writing document: ", error);
+	});
+
+}
+
+let adminDelValueFunc = (event) => {
+	event.preventDefault();
+
+
+}
+
+let adminGeneratePropValData = () => {
+	document.querySelectorAll('.admin-option').forEach(n => n.remove());
+	propertyValueArr = [];
+
+	db.collection("properties").get()
+	.then(function(querySnapshot) {
+		querySnapshot.forEach(function(doc) {
+			doc = doc.data();
+
+			el = `<option value="${doc.name}" class="admin-option">${doc.name}</option>`;
+
+			adminDelPropSelect.insertAdjacentHTML('beforeend', el);
+			adminAddValueSelect.insertAdjacentHTML('beforeend', el);
+		});
+	})
+	.catch(function(error) {
+		console.log("Error getting documents: ", error);
+	});
+
+	db.collection("properties").get()
+	.then(function(querySnapshot) {
+		querySnapshot.forEach(function(doc) {
+			doc = doc.data();
+			delete doc.name;
+			propertyValueArr.push(...Object.keys(doc));
+		});
+		propertyValueArr.forEach(value => {
+			el = `<option value="${value}" class="admin-option">${value}</option>`;
+			adminDelValueSelect.insertAdjacentHTML('beforeend', el);
+		});
+	})
+	.catch(function(error) {
+		console.log("Error getting documents: ", error);
+	});
+}
+
+
+
+
+
+
 let adminDeleteFunc = () => {
-	console.log(adminDeviceDeleteSelect.value);
-
 	db.collection("devices").doc(adminDeviceDeleteSelect.value).delete();
-
-
 }
 
 let adminDeviceButtonFunc = () => {
@@ -344,6 +440,10 @@ let setButtonListeners = () => {
 	adminDeviceCheckOutButton.addEventListener('click', adminDeviceCheckOut, false);
 	adminDeviceDeleteButton.addEventListener('click', adminDeleteFunc, false);
 	adminPropertiesButton.addEventListener('click', adminProperties, false);
+	adminCreatePropButton.addEventListener('click', adminAddPropertyFunc, false);
+	adminDelPropButton.addEventListener('click', adminDelPropertyFunc, false);
+	adminAddValueButton.addEventListener('click', adminAddValueFunc, false);
+	adminDelValueButton.addEventListener('click', adminDelValueFunc, false);
 
 
 }
@@ -355,6 +455,10 @@ let generateTableListener = () => {
 			generateSelections();
 			manageDeviceAdminSelectGenerator();
 			CheckInInit();
+		})
+	db.collection('properties')
+		.onSnapshot(doc => {
+			adminGeneratePropValData();
 		})
 }
 
