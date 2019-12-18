@@ -60,6 +60,8 @@ let counterDeviceArr = [];
 
 let propertyValueName;
 let propertyValueArr = [];
+let propertyDelSelectValue;
+let propertyDelSelectCollValue;
 
 //Functions
 let adminProperties = () => {
@@ -113,6 +115,15 @@ let adminAddValueFunc = (event) => {
 let adminDelValueFunc = (event) => {
 	event.preventDefault();
 
+	propertyDelSelectValue = adminDelValueSelect.value;
+	propertyDelSelectCollValue = propertyDelSelectValue.split('-')[0];
+
+
+	db.collection('properties').doc(propertyDelSelectCollValue).update({
+		[propertyDelSelectValue]: fieldValue.delete()
+	});
+
+
 
 }
 
@@ -129,19 +140,11 @@ let adminGeneratePropValData = () => {
 
 			adminDelPropSelect.insertAdjacentHTML('beforeend', el);
 			adminAddValueSelect.insertAdjacentHTML('beforeend', el);
-		});
-	})
-	.catch(function(error) {
-		console.log("Error getting documents: ", error);
-	});
 
-	db.collection("properties").get()
-	.then(function(querySnapshot) {
-		querySnapshot.forEach(function(doc) {
-			doc = doc.data();
 			delete doc.name;
 			propertyValueArr.push(...Object.keys(doc));
 		});
+
 		propertyValueArr.forEach(value => {
 			el = `<option value="${value}" class="admin-option">${value}</option>`;
 			adminDelValueSelect.insertAdjacentHTML('beforeend', el);
@@ -150,6 +153,7 @@ let adminGeneratePropValData = () => {
 	.catch(function(error) {
 		console.log("Error getting documents: ", error);
 	});
+
 }
 
 
