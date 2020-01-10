@@ -1,6 +1,7 @@
 //Imports
 import {auth,db,fieldValue} from './modules/firebase';
 import Modal from './modules/modal';
+import storedProcedures from './modules/stored-procedure';
 import Device from './classes/device';
 
 //DOM selection
@@ -24,7 +25,6 @@ let adminDeviceCheckOutButton = document.querySelector('#admin-check-out-button'
 let adminPropertiesButton = document.querySelector('#main-admin-properties-button');
 let adminDeviceDeleteSelect = document.querySelector('#admin-device-delete-select');
 let adminDeviceDeleteButton = document.querySelector('#admin-device-delete-button');
-
 let adminCreatePropInput = document.querySelector('#admin-add-prop-input');
 let adminCreatePropButton = document.querySelector('#admin-add-prop-button');
 let adminDelPropSelect = document.querySelector('#admin-delete-prop-select');
@@ -34,6 +34,8 @@ let adminAddValueInput = document.querySelector('#admin-add-value-input');
 let adminAddValueButton = document.querySelector('#admin-add-value-button');
 let adminDelValueSelect = document.querySelector('#admin-del-value-select');
 let adminDelValueButton = document.querySelector('#admin-del-value-button');
+let deviceAddPropertyButton = document.querySelector('#add-property-modal-button');
+let propertySection = document.querySelector('#custom-property-section');
 
 //Global variables
 let currentUser;
@@ -57,14 +59,77 @@ let adminCheckOutUserArr = [];
 let adminCheckOutUserVal;
 let adminCheckOutDeviceVal;
 let counterDeviceArr = [];
-
 let propertyValueName;
 let propertyValueArr = [];
 let propertyDelSelectValue;
 let propertyDelSelectCollValue;
+let registerAddPropertySelect;
+let propertyCurrentRow;
+let RegisterValueList;
 
 //Functions
-let adminProperties = () => {
+
+let deviceAddPropertyFunc = (event) => { //USP
+	event.preventDefault();
+
+	propertyCurrentRow = [...document.querySelectorAll('.device-register-property-select')].length + 1;
+	el = `<div id="device-property-row-${propertyCurrentRow}"> <select class="device-register-property-select"></select> <select class="device-register-value-select"></select> <button class="remove-prop-val">&#x2212;</button><br></div>`
+	propertySection.insertAdjacentHTML('beforeend', el);
+	registerAddPropertySelect = [...document.querySelectorAll('.device-register-property-select')];
+
+	db.collection("properties").get()
+	.then(function(querySnapshot) {
+		querySnapshot.forEach(function(doc) {
+			doc = doc.data();
+			el = `<option value="${doc.name}">${doc.name}</option>`
+			document.querySelector(`#device-property-row-${propertyCurrentRow}`).childNodes[1].insertAdjacentHTML('beforeend', el);
+		});
+	})
+	.catch(function(error) {
+		console.log("Error getting documents: ", error);
+	});
+
+	registerAddPropertySelect.forEach(e => {
+		e.addEventListener('change', customPropertyGenerator, false);
+	});
+
+}
+
+let customPropertyGenerator = (event) => {
+	event.preventDefault();
+
+	propertyCurrentRow = event.target.parentElement;
+
+	storedProcedures.propertiesProcedure([...propertyCurrentRow.childNodes][1].value).get().then(function(doc) {
+		if (doc.exists) {
+			doc = doc.data();
+
+			delete doc.name;
+			RegisterValueList = propertyCurrentRow.childNodes[3];
+
+			[...RegisterValueList.childNodes].forEach(n => n.remove());
+
+			Object.keys(doc).forEach( e => {
+				console.log(e);
+				el = `<option class="value-option">${e}</option>`
+				RegisterValueList.insertAdjacentHTML('beforeend', el)
+			})
+
+		} else {
+			// doc.data() will be undefined in this case
+			console.log("No such document!");
+		}
+	}).catch(function(error) {
+		console.log("Error getting document:", error);
+	});
+}
+
+
+
+
+
+
+let adminProperties = () => { //USP
 	adminGeneratePropValData();
 	Modal.openModal('properties-admin');
 }
@@ -72,7 +137,7 @@ let adminProperties = () => {
 let adminAddPropertyFunc = (event) => {
 	event.preventDefault();
 
-	db.collection("properties").doc(adminCreatePropInput.value).set({
+	storedProcedures.propertiesProcedure(adminCreatePropInput.value).set({
 		name: adminCreatePropInput.value
 	})
 	.then(function() {
@@ -83,16 +148,14 @@ let adminAddPropertyFunc = (event) => {
 	});
 }
 
-let adminDelPropertyFunc = (event) => {
+let adminDelPropertyFunc = (event) => { //USP
 	event.preventDefault();
 
-	db.collection("properties").doc(adminDelPropSelect.value).delete().then(function() {
+	storedProcedures.propertiesProcedure(adminDelPropSelect.value).delete().then(function() {
 		console.log("Document successfully deleted!");
 	}).catch(function(error) {
 		console.log('error removing document: ', error);
 	})
-
-
 }
 
 let adminAddValueFunc = (event) => {
@@ -109,7 +172,6 @@ let adminAddValueFunc = (event) => {
 	.catch(function(error) {
 		console.error("Error writing document: ", error);
 	});
-
 }
 
 let adminDelValueFunc = (event) => {
@@ -118,13 +180,9 @@ let adminDelValueFunc = (event) => {
 	propertyDelSelectValue = adminDelValueSelect.value;
 	propertyDelSelectCollValue = propertyDelSelectValue.split('-')[0];
 
-
 	db.collection('properties').doc(propertyDelSelectCollValue).update({
 		[propertyDelSelectValue]: fieldValue.delete()
 	});
-
-
-
 }
 
 let adminGeneratePropValData = () => {
@@ -155,11 +213,6 @@ let adminGeneratePropValData = () => {
 	});
 
 }
-
-
-
-
-
 
 let adminDeleteFunc = () => {
 	db.collection("devices").doc(adminDeviceDeleteSelect.value).delete();
@@ -208,7 +261,6 @@ let manageDeviceAdminSelectGenerator = () => {
 	}
 
 	db.collection("devices").where('deviceAvailability', '==', 'unavailable').get().then(querySnapshot => {
-
 		querySnapshot.forEach(function(doc) {
 			doc = doc.data();
 			el = `<option value="${doc.deviceName}" class="device-admin-in admin-select-generated">${doc.deviceName}</option>`;
@@ -217,7 +269,6 @@ let manageDeviceAdminSelectGenerator = () => {
 	});
 
 	db.collection("devices").where('deviceAvailability', '==', 'available').get().then(querySnapshot => {
-
 		querySnapshot.forEach(function(doc) {
 			doc = doc.data();
 			el = `<option value="${doc.deviceName}" class="device-admin-out admin-select-generated">${doc.deviceName}</option>`;
@@ -235,7 +286,6 @@ let manageDeviceAdminSelectGenerator = () => {
 	  .catch(err => {
 		alert('Error getting documents', err);
 	  });
-
 
 	db.collection('devices').get().then(snapshot => {
 		snapshot.forEach(doc => {
@@ -276,7 +326,6 @@ let generateTable = () => { //loop that creates rows and adds them to table
 			el = `<tr class="dynamic-table-row"><td>${data.deviceName}</td><td>${data.deviceType}</td><td>${data.deviceAvailability}</td></tr>`;``
 
 			deviceRowArr.push(el);
-
 		});
 		deviceRowArr = deviceRowArr.join(' ');
 		tableBody.insertAdjacentHTML('beforeend', deviceRowArr);
@@ -291,7 +340,6 @@ let generateTable = () => { //loop that creates rows and adds them to table
 let generateSelections = () => {
 	document.querySelectorAll('.device-option-out').forEach(n => n.remove());
 	db.collection("devices").where('deviceAvailability', '==', 'available').get().then(querySnapshot => {
-
 		querySnapshot.forEach(function(doc) {
 			doc = doc.data();
 			el = `<option value="${doc.deviceName}" class="device-option-out">${doc.deviceName}</option>`;
@@ -308,7 +356,7 @@ let checkOutValidation = () => {
 	}
 }
 
-let CheckOutInit = (event) => {
+let CheckOutInit = (event) => { //USP
 	event.preventDefault();
 
 	if (checkOutValidation()) {
@@ -319,7 +367,7 @@ let CheckOutInit = (event) => {
 			checkOutUserEmail : auth.currentUser.email,
 			deviceAvailability: 'unavailable'
 		}
-		db.collection("devices").doc(selectValue).update(checkOutData);
+		storedProcedures.deviceProcedure(selectValue).update(checkOutData);
 	} else {
 		alert('check out failed :(');
 	}
@@ -335,7 +383,6 @@ let CheckInInit = () => {
 			<button class="device-list-item-button" data-devicename="${doc.deviceName}">Check In</button></li>`;
 
 			document.getElementById('device-out-list').insertAdjacentHTML('beforeend', el);
-
 		});
 		counterDeviceArr = [];
 		db.collection('devices').where('deviceAvailability', '==', 'unavailable')
@@ -351,8 +398,6 @@ let CheckInInit = () => {
 		document.querySelectorAll('.device-list-item-button').forEach(item => {
 			item.addEventListener('click', checkInItem);
 		});
-
-
 	});
 }
 
@@ -371,7 +416,6 @@ let authChangeFunction = () => {
 	auth.onAuthStateChanged(user => {
 		if (user) {
 			const docRef = db.collection('users').doc(user.uid);
-
 			docRef.get().then (doc => {
 				data = doc.data();
 
@@ -381,12 +425,8 @@ let authChangeFunction = () => {
 					userLast: data.last,
 					userPhone: data.phone
 				}
-
-
-
 			}).catch(error => {
 				console.log(error);
-
 			})
 		} else {
 			userData = {};
@@ -396,7 +436,6 @@ let authChangeFunction = () => {
 }
 
 let setButtonListeners = () => {
-
 	signOutButton.addEventListener('click', () => {
 		auth.signOut().then(() => {//sign out successful
 			window.location = 'index.html';
@@ -414,7 +453,6 @@ let setButtonListeners = () => {
 
 		newDevice = new Device(newDeviceNameFieldValue,newDeviceNotesFieldValue,newDeviceTypeFieldValue);
 		newDeviceObj = Object.assign({}, newDevice);
-
 
 		checkDoc = db.collection('devices').doc(newDeviceObj.deviceName);
 		checkDoc.get().then(doc => {
@@ -448,6 +486,7 @@ let setButtonListeners = () => {
 	adminDelPropButton.addEventListener('click', adminDelPropertyFunc, false);
 	adminAddValueButton.addEventListener('click', adminAddValueFunc, false);
 	adminDelValueButton.addEventListener('click', adminDelValueFunc, false);
+	deviceAddPropertyButton.addEventListener('click', deviceAddPropertyFunc, false);
 
 
 }
@@ -467,8 +506,8 @@ let generateTableListener = () => {
 }
 
 let init = () => {
-	setButtonListeners();
 	authChangeFunction();
+	setButtonListeners();
 	Modal.init();
 	generateTable();
 	generateTableListener();
